@@ -1,0 +1,70 @@
+name: sdk
+
+on:
+  workflow_dispatch:
+#   push:
+  # pull_request:
+
+env:
+  TAG_NAME: "dev"
+  LLVM_VERSION: "15.0.6"
+
+permissions:
+  contents: write
+
+jobs:
+
+  build-for-windows:
+    name: ${{ matrix.job.target }} (${{ matrix.job.os }})
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - { target: x86_64-pc-windows-msvc, os: windows-2019, arch: x86_64 }
+          - { target: i686-pc-windows-msvc, os: windows-2019, arch: i686 }
+    steps:
+
+    - uses: actions/checkout@v2
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: ${{ env.LLVM_VERSION }}
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@v1
+      with:
+        toolchain: stable
+        targets: ${{ matrix.job.target }}
+        components: ''
+
+    - name: Source
+      run: |
+        git clone -b sdk --depth=1 https://github.com/21pages/deps.git
+    
+    - name: Build
+      working-directory: deps
+      run: |
+        cargo build --release
+    
+    - name: Create Archive
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        type: 'zip'
+        filename: './sdk_windows_${{ matrix.job.arch }}.zip'
+        path: 'deps/target/release'
+    
+    - name: Publish
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        prerelease: true
+        tag_name: ${{ env.TAG_NAME }}
+        files: | 
+          ./sdk_windows_${{ matrix.job.arch }}.zip
+
+  
