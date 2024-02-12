@@ -28,26 +28,30 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v1
-      with:
-        version: ${{ env.LLVM_VERSION }}
-
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@v1
-      with:
-        toolchain: stable
-        targets: ${{ matrix.job.target }}
-        components: ''
-
     - name: Source
       run: |
-        git clone -b sdk --depth=1 https://github.com/21pages/deps.git
+        git clone --depth=1 https://github.com/21pages/externals.git
     
     - name: Build
-      working-directory: deps
+      working-directory: externals
       run: |
-        cargo build --release
+        cd Video_Codec_SDK_11.1.5
+        cmake -B build
+        cmake --build build -j4 --config Release
+        cd ..
+        cd AMF_v1.4.29
+        cmake -B build
+        cmake --build build -j4 --config Release
+        cd ..
+        cd libvpl_v2023.4.0
+        cmake -B build
+        cmake --build build -j4 --config Release
+        cd ..
+
+        New-Item -ItemType Directory -Path sdk_windows_${{ matrix.job.arch }}
+        Copy-Item -Path Video_Codec_SDK_11.1.5/build/Release/video_codec_sdk.lib -Destination sdk_windows_${{ matrix.job.arch }} -Force
+        Copy-Item -Path AMF_v1.4.29/build/Release/amf.lib -Destination sdk_windows_${{ matrix.job.arch }} -Force
+        Copy-Item -Path libvpl_v2023.4.0/build/Release/vpl.lib -Destination sdk_windows_${{ matrix.job.arch }} -Force
     
     - name: Create Archive
       uses: thedoctor0/zip-release@0.7.1
@@ -55,7 +59,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         type: 'zip'
         filename: './sdk_windows_${{ matrix.job.arch }}.zip'
-        path: 'deps/target/release'
+        path: 'externals/sdk_windows_${{ matrix.job.arch }}'
     
     - name: Publish
       uses: softprops/action-gh-release@v1
