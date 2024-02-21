@@ -21,12 +21,14 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-pc-windows-msvc, os: windows-2019, arch: x86_64 }
-          - { target: i686-pc-windows-msvc, os: windows-2019, arch: i686 }
+          - { target: x86_64-pc-windows-msvc, os: windows-2019, arch: x86_64, msvc_arch: amd64, cmake_arch: x64 }
+          - { target: i686-pc-windows-msvc, os: windows-2019, arch: i686, msvc_arch: amd64_x86, cmake_arch: Win32 }
     steps:
 
     - uses: actions/checkout@v2
     - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.job.msvc_arch }}
 
     - name: Source
       run: |
@@ -36,15 +38,15 @@ jobs:
       working-directory: externals
       run: |
         cd Video_Codec_SDK_11.1.5
-        cmake -B build
+        cmake -B build -G "Visual Studio 16 2019" -A ${{matrix.job.cmake_arch}}
         cmake --build build -j4 --config Release
         cd ..
         cd AMF_v1.4.29
-        cmake -B build
+        cmake -B build -G "Visual Studio 16 2019" -A ${{matrix.job.cmake_arch}}
         cmake --build build -j4 --config Release
         cd ..
         cd libvpl_v2023.4.0
-        cmake -B build
+        cmake -B build -G "Visual Studio 16 2019" -A ${{matrix.job.cmake_arch}}
         cmake --build build -j4 --config Release
         cd ..
 
