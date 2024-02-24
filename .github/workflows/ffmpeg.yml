@@ -264,7 +264,7 @@ jobs:
             ./ffmpeg_macos_${{ matrix.job.arch }}.zip
 
   build-for-android:
-    if: false
+    if: true
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
     strategy:
@@ -344,39 +344,15 @@ jobs:
           export API_LEVEL="21"
           export CC=$TOOLCHAIN/bin/${{ matrix.job.ndk_toolchain_path }}${API_LEVEL}-clang
           export CXX=$TOOLCHAIN/bin/${{ matrix.job.ndk_toolchain_path }}${API_LEVEL}-clang++
+          echo "CC=$CC"
+          echo "CXX=$CXX"
 
           ./configure  \
           --enable-cross-compile \
           --cross-prefix=$TOOLCHAIN/bin/${NDK_LLVM_TARGET} \
           --arch=${{ matrix.job.arch }} \
           --target-os=android \
-          --prefix=../release \
-          --disable-everything \
-          --disable-shared \
-          --disable-programs \
-          --disable-doc \
-          --disable-htmlpages \
-          --disable-manpages \
-          --disable-podpages \
-          --disable-txtpages \
-          --disable-network \
-          --disable-appkit \
-          --disable-coreimage  \
-          --disable-sdl2 \
-          --disable-securetransport \
-          --disable-vulkan \
-          --disable-audiotoolbox \
-          --disable-v4l2-m2m \
-          --disable-debug \
-          --disable-valgrind-backtrace \
-          --disable-large-tests \
-          --enable-avdevice \
-          --enable-avcodec \
-          --enable-avformat \
-          --disable-swresample \
-          --enable-swscale \
-          --disable-postproc \
-          --disable-avfilter \
+          ${{env.COMMON_CONF}} \
           --extra-cflags="-I../includes" \
           --extra-ldflags="-L$PWD/../libs"
   
