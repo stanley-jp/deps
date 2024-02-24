@@ -165,7 +165,7 @@ jobs:
           ${{github.workspace}}/FFmpeg/ffbuild/config.log
 
   build-for-linux:
-    if: false
+    if: true
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
     strategy:
