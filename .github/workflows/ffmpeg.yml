@@ -60,10 +60,17 @@ jobs:
 
     - name: Source FFmpeg
       run: |
-        git clone --depth=1 -b release/5.1 https://github.com/21pages/FFmpeg.git
+        git clone --depth=1 -b release/5.1 https://github.com/FFmpeg/FFmpeg.git
         mkdir includes
         mkdir libs
         ls -al
+
+    - name: Patch
+      run: |
+        cd FFmpeg
+        git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
+        git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
+        cd -
 
     - name: Source nv-codec-headers
       run: |
@@ -152,10 +159,17 @@ jobs:
   
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/5.1 https://github.com/21pages/FFmpeg.git
+          git clone --depth=1 -b release/5.1 https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
+
+      - name: Patch
+        run: |
+          cd FFmpeg
+          git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
+          git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
+          cd -
   
       - name: Source AMF
         run: |
@@ -222,7 +236,7 @@ jobs:
   
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/5.1 https://github.com/21pages/FFmpeg.git
+          git clone --depth=1 -b release/6.1 https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
@@ -323,7 +337,7 @@ jobs:
 
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/5.1 https://github.com/21pages/FFmpeg.git
+          git clone --depth=1 -b release/6.1 https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
@@ -400,7 +414,7 @@ jobs:
   
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/5.1 https://github.com/21pages/FFmpeg.git
+          git clone --depth=1 -b release/6.1 https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
