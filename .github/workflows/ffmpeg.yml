@@ -142,9 +142,9 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64 }
-          - { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, arch: aarch64 }
-          - { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, arch: armv7 }
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, extra: ""}
+          #- { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, arch: aarch64, extra: "--enable-cross-compile --arch=arm64 cross-prefix=aarch64-linux-gnu-" }
+          #- { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, arch: armv7, extra: "--enable-cross-compile --arch=armhf cross-prefix=arm-linux-gnueabihf-"}
       
     steps:
   
@@ -154,6 +154,16 @@ jobs:
         run: |
           sudo apt-get install build-essential
           sudo apt-get -y install yasm pkg-config
+      
+      - name: cross tool aarch64
+        if: ${{ matrix.job.arch == 'aarch64' }}
+        run: |
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+      
+      - name: cross tool armv7
+        if: ${{ matrix.job.arch == 'armv7' }}
+        run: |
+          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 
       - name: cuda-toolkit # sudo apt install nvidia-cuda-toolkit
         uses: Jimver/cuda-toolkit@v0.2.6
@@ -190,6 +200,8 @@ jobs:
           CC=gcc \
           ./configure  \
           ${{env.COMMON_CONF}} \
+          --target-os=linux \
+          ${{ matrix.job.extra }} \
           --extra-cflags="-I../includes" \
           --extra-ldflags="-L$PWD/../libs" \
           --enable-amf \
