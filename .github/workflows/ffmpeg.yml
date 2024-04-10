@@ -34,10 +34,6 @@ jobs:
       with:
         arch: ${{ matrix.job.msvc_arch }}
 
-    # - name: cuda-toolkit
-    #   uses: Jimver/cuda-toolkit@v0.2.6
-            
-
     - name: Msys2
       uses: msys2/setup-msys2@v2
       with:
@@ -156,6 +152,9 @@ jobs:
         run: |
           sudo apt-get install build-essential
           sudo apt-get -y install yasm pkg-config
+
+      - name: cuda-toolkit # sudo apt install nvidia-cuda-toolkit
+        uses: Jimver/cuda-toolkit@v0.2.6
   
       - name: Source FFmpeg
         run: |
@@ -176,6 +175,12 @@ jobs:
           git clone --depth=1 -b v1.4.29 https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git
           cp -r ./AMF/amf/public/include includes/AMF
           ls -al includes
+
+      - name: Source nv-codec-headers
+        run: |
+          git clone --depth=1 -b n11.1.5.2 https://github.com/FFmpeg/nv-codec-headers.git
+          cd nv-codec-headers && sudo make install
+          cd -
       
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
@@ -188,6 +193,9 @@ jobs:
           --enable-amf \
           --enable-encoder=h264_amf \
           --enable-encoder=hevc_amf \
+          --enable-cuda \
+          --enable-cuda_llvm \
+          --enable-ffnvcodec \
           --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi \
           --enable-hwaccel=h264_vdpau --enable-hwaccel=hevc_vdpau \
           --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc \
@@ -278,7 +286,7 @@ jobs:
             ./ffmpeg_macos_${{ matrix.job.arch }}.zip
 
   build-for-android:
-    if: true
+    if: false
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
     strategy:
