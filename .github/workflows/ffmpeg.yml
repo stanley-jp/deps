@@ -96,6 +96,8 @@ jobs:
         --extra-ldflags="-libpath:$PWD/../libs" \
         --enable-gpl \
         --enable-d3d11va \
+        --enable-cuda \
+        --enable-ffnvcodec \
         --enable-hwaccel=h264_nvdec \
         --enable-hwaccel=hevc_nvdec \
         --enable-hwaccel=h264_d3d11va \
