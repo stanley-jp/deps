@@ -22,8 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-pc-windows-msvc, os: windows-2019, arch: x86_64, msvc_arch: amd64, extra: "" }
-          - { target: i686-pc-windows-msvc, os: windows-2019, arch: i686, msvc_arch: amd64_x86, extra: "--enable-cross-compile" }
+          - { target: x86_64-pc-windows-msvc, os: windows-2019, arch: x86_64, msystem: "mingw64", msvc_arch: amd64, extra: "" }
+          - { target: i686-pc-windows-msvc, os: windows-2019, arch: i686, msystem: "mingw32", msvc_arch: amd64_x86, extra: "--enable-cross-compile" }
     defaults:
       run:
         shell: msys2 {0}
@@ -37,6 +37,7 @@ jobs:
     - name: Msys2
       uses: msys2/setup-msys2@v2
       with:
+        msystem: ${{ matrix.job.msystem }}
         path-type: inherit
         update: true
         install: >-
