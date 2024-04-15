@@ -8,7 +8,9 @@ on:
 env:
   TAG_NAME: "dev"
   NDK_VERSION: "r26b"
-  COMMON_CONF: "--prefix=../release  --disable-everything  --disable-shared  --disable-programs  --disable-doc  --disable-htmlpages  --disable-manpages  --disable-podpages  --disable-txtpages  --disable-network  --disable-appkit  --disable-coreimage   --disable-metal  --disable-sdl2  --disable-securetransport  --disable-vulkan  --disable-audiotoolbox  --disable-v4l2-m2m  --disable-debug  --disable-valgrind-backtrace  --disable-large-tests  --enable-avdevice  --enable-avcodec  --enable-avformat  --enable-avfilter  --enable-avdevice  --disable-swresample  --disable-swscale  --disable-postproc  --enable-decoder=h264  --enable-decoder=hevc  --enable-parser=h264  --enable-parser=hevc  --enable-bsf=h264_mp4toannexb  --enable-bsf=hevc_mp4toannexb   --enable-muxer=mp4  --enable-protocol=file"
+  FFMPEG_VERSION_WIN_LINUX: "release/5.1" # higher version ffmpeg requires higher version of nvidia driver
+  FFMPEG_VERSION: "release/7.0"
+  COMMON_CONF: "--prefix=../release --disable-shared --enable-static --enable-pic --disable-everything  --disable-programs  --disable-doc  --disable-htmlpages  --disable-manpages  --disable-podpages  --disable-txtpages  --disable-network  --disable-appkit  --disable-coreimage   --disable-metal  --disable-sdl2  --disable-securetransport  --disable-vulkan  --disable-audiotoolbox  --disable-v4l2-m2m  --disable-debug  --disable-valgrind-backtrace  --disable-large-tests  --disable-avdevice  --enable-avcodec  --enable-avformat  --disable-avfilter --disable-swresample  --disable-swscale  --disable-postproc  --enable-decoder=h264  --enable-decoder=hevc  --enable-parser=h264  --enable-parser=hevc  --enable-bsf=h264_mp4toannexb  --enable-bsf=hevc_mp4toannexb   --enable-muxer=mp4  --enable-protocol=file"
 
 permissions:
   contents: write
@@ -57,7 +59,7 @@ jobs:
 
     - name: Source FFmpeg
       run: |
-        git clone --depth=1 -b release/5.1 https://github.com/FFmpeg/FFmpeg.git
+        git clone --depth=1 -b ${{ env.FFMPEG_VERSION_WIN_LINUX }} https://github.com/FFmpeg/FFmpeg.git
         mkdir includes
         mkdir libs
         ls -al
@@ -143,9 +145,9 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, extra: ""}
-          #- { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, arch: aarch64, extra: "--enable-cross-compile --arch=arm64 cross-prefix=aarch64-linux-gnu-" }
-          #- { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, arch: armv7, extra: "--enable-cross-compile --arch=armhf cross-prefix=arm-linux-gnueabihf-"}
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, codec: "--enable-cuda --enable-cuda_llvm --enable-ffnvcodec --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec --enable-amf  --enable-encoder=h264_amf --enable-encoder=hevc_amf --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi", extra: ""}
+          - { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, arch: aarch64, codec: "", extra: "--enable-cross-compile --arch=arm64 cross-prefix=aarch64-linux-gnu-" }
+          - { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, arch: armv7, codec: "", extra: "--enable-cross-compile --arch=armhf cross-prefix=arm-linux-gnueabihf-"}
       
     steps:
   
@@ -167,16 +169,18 @@ jobs:
           sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 
       - name: cuda-toolkit # sudo apt install nvidia-cuda-toolkit
+        if: ${{ matrix.job.arch == 'x86_64' }}
         uses: Jimver/cuda-toolkit@v0.2.6
   
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/5.1 https://github.com/FFmpeg/FFmpeg.git
+          git clone --depth=1 -b ${{ env.FFMPEG_VERSION_WIN_LINUX }} https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
 
       - name: Patch
+        if: ${{ matrix.job.arch == 'x86_64' }}
         run: |
           cd FFmpeg
           git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
@@ -190,6 +194,7 @@ jobs:
           ls -al includes
 
       - name: Source nv-codec-headers
+        if: ${{ matrix.job.arch == 'x86_64' }}
         run: |
           git clone --depth=1 -b n11.1.5.2 https://github.com/FFmpeg/nv-codec-headers.git
           cd nv-codec-headers && sudo make install
@@ -198,23 +203,13 @@ jobs:
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
         run: |
-          CC=gcc \
           ./configure  \
           ${{env.COMMON_CONF}} \
           --target-os=linux \
           ${{ matrix.job.extra }} \
           --extra-cflags="-I../includes" \
           --extra-ldflags="-L$PWD/../libs" \
-          --enable-amf \
-          --enable-encoder=h264_amf \
-          --enable-encoder=hevc_amf \
-          --enable-cuda \
-          --enable-cuda_llvm \
-          --enable-ffnvcodec \
-          --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi \
-          --enable-hwaccel=h264_vdpau --enable-hwaccel=hevc_vdpau \
-          --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc \
-          --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec
+          ${{ matrix.job.codec }}
   
       - name: Build
         working-directory: FFmpeg
@@ -259,7 +254,7 @@ jobs:
   
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/6.1 https://github.com/FFmpeg/FFmpeg.git
+          git clone --depth=1 -b ${{ env.FFMPEG_VERSION }} https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
@@ -267,15 +262,13 @@ jobs:
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
         run: |
-          CC=gcc \
           ./configure  \
-          ${{env.COMMON_CONF}} \
-          --extra-cflags="-I../includes" \
-          --extra-ldflags="-L$PWD/../libs" \
-          --enable-videotoolbox \
-          --enable-encoder=h264_videotoolbox,hevc_videotoolbox \
-          --enable-decoder=h264 --enable-decoder=hevc \
-          --enable-hwaccel=h264_videotoolbox --enable-hwaccel=hevc_videotoolbox
+          cc=clang \
+          --disable-hwaccels \
+          --disable-encoders \
+          --disable-videotoolbox \
+          --disable-autodetect \
+          ${{env.COMMON_CONF}}
   
       - name: Build
         working-directory: FFmpeg
@@ -301,15 +294,15 @@ jobs:
             ./ffmpeg_macos_${{ matrix.job.arch }}.zip
 
   build-for-android:
-    if: false
+    if: true
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
     strategy:
       fail-fast: false
       matrix:
         job:
-          - { target: aarch64-linux-android, os: ubuntu-20.04, arch: aarch64, ndk_toolchain_path: aarch64-linux-android }
-          - { target: armv7-linux-androideabi, os: ubuntu-20.04, arch: armv7, ndk_toolchain_path: armv7a-linux-androideabi }
+          - { target: aarch64-linux-android, os: ubuntu-20.04, arch: aarch64, ndk_toolchain_path: aarch64-linux-android, cpu: "armv8-a"}
+          - { target: armv7-linux-androideabi, os: ubuntu-20.04, arch: armv7, ndk_toolchain_path: armv7a-linux-androideabi, cpu: "armv7-a"}
     steps:
   
       - uses: actions/checkout@v2
@@ -360,42 +353,52 @@ jobs:
 
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/6.1 https://github.com/FFmpeg/FFmpeg.git
+          git clone --depth=1 -b ${{ env.FFMPEG_VERSION }} https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
           uname -a
-          ls $ANDROID_NDK/toolchains/llvm/prebuilt/
       
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
+        # continue-on-error: true
         run: |
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK" >> $GITHUB_ENV
           export HOST_TAG="linux-x86_64" # current platform, set as `ls $ANDROID_NDK/toolchains/llvm/prebuilt/`
           export TOOLCHAIN=$ANDROID_NDK/toolchains/llvm/prebuilt/$HOST_TAG
-          export NDK_LLVM_TARGET=${{ matrix.job.target }}
-          # export AR=$TOOLCHAIN/bin/${NDK_LLVM_TARGET}-ar
-          # export AS=$TOOLCHAIN/bin/${NDK_LLVM_TARGET}-as
-          # export LD=$TOOLCHAIN/bin/${NDK_LLVM_TARGET}-ld.gold  # if ndk < 22, use aarch64-linux-android-ld
-          # export RANLIB=$TOOLCHAIN/bin/${NDK_LLVM_TARGET}-ranlib
-          # export STRIP=$TOOLCHAIN/bin/${NDK_LLVM_TARGET}-strip
           export API_LEVEL="21"
           export CC=$TOOLCHAIN/bin/${{ matrix.job.ndk_toolchain_path }}${API_LEVEL}-clang
           export CXX=$TOOLCHAIN/bin/${{ matrix.job.ndk_toolchain_path }}${API_LEVEL}-clang++
-          echo "CC=$CC"
-          echo "CXX=$CXX"
+          export AR=$TOOLCHAIN/bin/llvm-ar
+          export AS=$TOOLCHAIN/bin/llvm-as
+          export NM=$TOOLCHAIN/bin/llvm-nm
+          export STRIP=$TOOLCHAIN/bin/llvm-strip
 
           ./configure  \
+          ${{env.COMMON_CONF}} \
+          --disable-hwaccels \
+          --disable-encoders \
+          --host-cc=clang \
+          --cc=$CC \
+          --cxx=$CXX \
+          --sysroot=$TOOLCHAIN/sysroot \
+          --ar=$AR \
+          --nm=$NM \
+          --strip=$STRIP \
           --enable-cross-compile \
-          --cross-prefix=$TOOLCHAIN/bin/${NDK_LLVM_TARGET} \
           --arch=${{ matrix.job.arch }} \
           --target-os=android \
-          ${{env.COMMON_CONF}} \
-          --extra-cflags="-I../includes" \
-          --extra-ldflags="-L$PWD/../libs"
+          --disable-asm \
+          --extra-cflags="-march=${{ matrix.job.cpu }}"
+
+      - name: print ffbuild logs
+        run: '[[ -f ./FFmpeg/ffbuild/config.log ]] && tail -50 ./FFmpeg/ffbuild/config.log'
   
       - name: Build
         working-directory: FFmpeg
         run: |
+          export ANDROID_NDK_HOME=$ANDROID_NDK
+          export PATH=$PATH:$ANDROID_NDK_HOME
           make -j32 && make install
       
       - name: Create Archive
@@ -414,11 +417,10 @@ jobs:
           prerelease: true
           tag_name: ${{ env.TAG_NAME }}
           files: | 
-            ./ffmpeg_android_${{ matrix.job.arch }}.zip
-            
+            ./ffmpeg_android_${{ matrix.job.arch }}.zip            
   
   build-for-ios:
-    if: false
+    if: true
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
     strategy:
@@ -431,56 +433,22 @@ jobs:
   
       - uses: actions/checkout@v2
   
-    #   - name: tools
-    #     run: |
-    #       sudo apt-get -y install yasm pkg-config
+      - name: tools
+        run: |
+          brew install yasm pkg-config wget
   
       - name: Source FFmpeg
         run: |
-          git clone --depth=1 -b release/6.1 https://github.com/FFmpeg/FFmpeg.git
+          git clone --depth=1 -b ${{ env.FFMPEG_VERSION }} https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
           ls -al
-      
-      - name: Configure
-        working-directory: ${{github.workspace}}/FFmpeg
-        run: |
-          ./configure  \
-          --enable-cross-compile
-          --prefix=../release \
-          --disable-everything \
-          --disable-shared \
-          --disable-programs \
-          --disable-doc \
-          --disable-htmlpages \
-          --disable-manpages \
-          --disable-podpages \
-          --disable-txtpages \
-          --disable-network \
-          --disable-appkit \
-          --disable-coreimage  \
-          --disable-sdl2 \
-          --disable-securetransport \
-          --disable-vulkan \
-          --disable-audiotoolbox \
-          --disable-v4l2-m2m \
-          --disable-debug \
-          --disable-valgrind-backtrace \
-          --disable-large-tests \
-          --enable-avdevice \
-          --enable-avcodec \
-          --enable-avformat \
-          --disable-swresample \
-          --enable-swscale \
-          --disable-postproc \
-          --disable-avfilter \
-          --extra-cflags="-I../includes" \
-          --extra-ldflags="-L$PWD/../libs"
-  
+          uname -a
+
       - name: Build
-        working-directory: FFmpeg
         run: |
-          make -j32 && make install
+          mv ./scripts/build-ffmpeg-ios.sh ./
+          ./build-ffmpeg-ios.sh
       
       - name: Create Archive
         uses: thedoctor0/zip-release@0.7.1
@@ -488,7 +456,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           type: 'zip'
           filename: 'ffmpeg_ios_${{ matrix.job.arch }}.zip'
-          path: 'release'
+          path: 'thin/arm64'
       
       - name: Publish
         uses: softprops/action-gh-release@v1
