@@ -111,7 +111,8 @@ jobs:
         --enable-encoder=h264_amf \
         --enable-encoder=hevc_amf \
         --enable-encoder=h264_nvenc \
-        --enable-encoder=hevc_nvenc
+        --enable-encoder=hevc_nvenc \
+        --enable-mediafoundation --enable-encoder=h264_mf --enable-encoder=hevc_mf
     
     - name: Build
       working-directory: FFmpeg
