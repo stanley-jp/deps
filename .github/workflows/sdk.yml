@@ -45,15 +45,10 @@ jobs:
         cmake -B build -G "Visual Studio 16 2019" -A ${{matrix.job.cmake_arch}}
         cmake --build build -j4 --config Release
         cd ..
-        cd libvpl_v2023.4.0
-        cmake -B build -G "Visual Studio 16 2019" -A ${{matrix.job.cmake_arch}}
-        cmake --build build -j4 --config Release
-        cd ..
 
         New-Item -ItemType Directory -Path sdk_windows_${{ matrix.job.arch }}
         Copy-Item -Path Video_Codec_SDK_11.1.5/build/Release/video_codec_sdk.lib -Destination sdk_windows_${{ matrix.job.arch }} -Force
         Copy-Item -Path AMF_v1.4.29/build/Release/amf.lib -Destination sdk_windows_${{ matrix.job.arch }} -Force
-        Copy-Item -Path libvpl_v2023.4.0/build/Release/vpl.lib -Destination sdk_windows_${{ matrix.job.arch }} -Force
     
     - name: Create Archive
       uses: thedoctor0/zip-release@0.7.1

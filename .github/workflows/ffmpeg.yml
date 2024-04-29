@@ -24,8 +24,8 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-pc-windows-msvc, os: windows-2019, arch: x86_64, msystem: "mingw64", msvc_arch: amd64, extra: "" }
-          - { target: i686-pc-windows-msvc, os: windows-2019, arch: i686, msystem: "mingw32", msvc_arch: amd64_x86, extra: "--enable-cross-compile" }
+          - { target: x86_64-pc-windows-msvc, os: windows-2019, arch: x86_64, msystem: "mingw64", msvc_arch: amd64, mfx_dir: win_x64, extra: "" }
+          - { target: i686-pc-windows-msvc, os: windows-2019, arch: i686, msystem: "mingw32", msvc_arch: amd64_x86, mfx_dir: win_Win32, extra: "--enable-cross-compile" }
     defaults:
       run:
         shell: msys2 {0}
@@ -83,11 +83,47 @@ jobs:
         git clone --depth=1 -b v1.4.29 https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git
         cp -r ./AMF/amf/public/include includes/AMF
         ls -al includes
+
+    - name: mfx dispatcher
+      shell: bash
+      run: |
+        git clone --depth=1  https://github.com/21pages/externals.git
+        cd externals/MediaSDK_22.5.4/api/mfx_dispatch/windows
+        MSBuild.exe libmfx_vs2015.vcxproj -p:Configuration=Release
+        cd -
+
+    - name: mfx dispatcher install
+      run: |
+        mkdir -p /usr/local/lib/mfx/lib
+        mkdir -p /usr/local/lib/mfx/include/mfx
+        cp externals/MediaSDK_22.5.4/api/mfx_dispatch/windows/../../../../build/${{ matrix.job.mfx_dir }}/Release/lib/libmfx_vs2015.lib /usr/local/lib/mfx/lib/mfx.lib
+        cp externals/MediaSDK_22.5.4/api/include/* /usr/local/lib/mfx/include/mfx/
+        cp externals/MediaSDK_22.5.4/api/mediasdk_structures/* /usr/local/lib/mfx/include/mfx/
+        cat > /usr/local/lib/pkgconfig/libmfx.pc << EOF
+        prefix=/usr/local/lib/mfx
+
+        # libmfx pkg-config.
+        exec_prefix=\${prefix}
+        includedir=\${prefix}/include
+        libdir=\${exec_prefix}/lib
+
+        Name: libmfx
+        Description: Intel Media SDK Dispatched static library
+        Version: 1.35.1
+        Libs: -L"\${libdir}" -lmfx -lole32 -lAdvapi32
+        Requires: 
+        Cflags: -I"\${includedir}"
+        EOF
+
+        cat /usr/local/lib/pkgconfig/libmfx.pc
+        ls -al /usr/local/lib/mfx/lib
+        ls -al /usr/local/lib/mfx/include
     
     - name: Configure
       working-directory: ${{github.workspace}}/FFmpeg
       shell: msys2 {0}
       run: |
+        export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
         PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH \
         CC=cl.exe \
         ./configure  \
@@ -112,13 +148,15 @@ jobs:
         --enable-encoder=hevc_amf \
         --enable-encoder=h264_nvenc \
         --enable-encoder=hevc_nvenc \
-        --enable-mediafoundation --enable-encoder=h264_mf --enable-encoder=hevc_mf
+        --enable-mediafoundation --enable-encoder=h264_mf --enable-encoder=hevc_mf \
+        --enable-libmfx --enable-encoder=h264_qsv --enable-encoder=hevc_qsv
     
     - name: Build
       working-directory: FFmpeg
       shell: msys2 {0}
       run: |
         make -j32 && make install
+        cp /usr/local/lib/mfx/lib/mfx.lib ../release/lib/
     
     - name: Create Archive
       uses: thedoctor0/zip-release@0.7.1
