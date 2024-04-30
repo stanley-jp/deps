@@ -148,7 +148,6 @@ jobs:
         --enable-encoder=hevc_amf \
         --enable-encoder=h264_nvenc \
         --enable-encoder=hevc_nvenc \
-        --enable-mediafoundation --enable-encoder=h264_mf --enable-encoder=hevc_mf \
         --enable-libmfx --enable-encoder=h264_qsv --enable-encoder=hevc_qsv
     
     - name: Build
