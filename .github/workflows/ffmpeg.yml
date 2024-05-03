@@ -158,6 +158,7 @@ jobs:
       run: |
         make -j32 && make install
         cp /usr/local/lib/mfx/lib/mfx.lib ../release/lib/
+        rm -r ../release/share
     
     - name: Create Archive
       uses: thedoctor0/zip-release@0.7.1
@@ -237,6 +238,7 @@ jobs:
           cd -
   
       - name: Source AMF
+        if: ${{ matrix.job.arch == 'x86_64' }}
         run: |
           git clone --depth=1 -b v1.4.29 https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git
           cp -r ./AMF/amf/public/include includes/AMF
@@ -265,6 +267,7 @@ jobs:
         working-directory: FFmpeg
         run: |
           make -j32 && make install
+          rm -r ../release/share
       
       - name: Create Archive
         uses: thedoctor0/zip-release@0.7.1
@@ -328,6 +331,7 @@ jobs:
         working-directory: FFmpeg
         run: |
           make -j32 && make install
+          rm -r ../release/share
       
       - name: Create Archive
         uses: thedoctor0/zip-release@0.7.1
@@ -456,6 +460,7 @@ jobs:
           export ANDROID_NDK_HOME=$ANDROID_NDK
           export PATH=$PATH:$ANDROID_NDK_HOME
           make -j32 && make install
+          rm -r ../release/share
       
       - name: Create Archive
         uses: thedoctor0/zip-release@0.7.1
@@ -506,6 +511,7 @@ jobs:
           mv ./scripts/build-ffmpeg-ios.sh ./
           mkdir -p thin/arm64
           ./build-ffmpeg-ios.sh
+          rm -r thin/arm64/share
       
       - name: Create Archive
         uses: thedoctor0/zip-release@0.7.1
