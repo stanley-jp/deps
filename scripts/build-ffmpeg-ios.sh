@@ -13,30 +13,14 @@ SCRATCH="scratch"
 # must be an absolute path
 THIN=`pwd`/"thin"
 
-# absolute path to x264 library
-#X264=`pwd`/fat-x264
-
-#FDK_AAC=`pwd`/../fdk-aac-build-script-for-iOS/fdk-aac-ios
+echo "COMMON_CONF: $COMMON_CONF"
 
 CONFIGURE_FLAGS="--enable-cross-compile \
 				--disable-hwaccels \
 				--disable-encoders \
 				--disable-videotoolbox \
 				--disable-autodetect \
-				--disable-shared --enable-static --enable-pic --disable-everything  --disable-programs  --disable-doc  --disable-htmlpages  --disable-manpages  --disable-podpages  --disable-txtpages  --disable-network  --disable-appkit  --disable-coreimage   --disable-metal  --disable-sdl2  --disable-securetransport  --disable-vulkan  --disable-audiotoolbox  --disable-v4l2-m2m  --disable-debug  --disable-valgrind-backtrace  --disable-large-tests  --disable-avdevice  --enable-avcodec  --enable-avformat  --disable-avfilter --disable-swresample  --disable-swscale  --disable-postproc  --enable-decoder=h264  --enable-decoder=hevc  --enable-parser=h264  --enable-parser=hevc  --enable-bsf=h264_mp4toannexb  --enable-bsf=hevc_mp4toannexb   --enable-muxer=mp4  --enable-protocol=file"
-
-if [ "$X264" ]
-then
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-gpl --enable-libx264"
-fi
-
-if [ "$FDK_AAC" ]
-then
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac --enable-nonfree"
-fi
-
-# avresample
-#CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-avresample"
+				$COMMON_CONF"
 
 ARCHS="arm64"
 
@@ -145,7 +129,7 @@ then
 		    --extra-cflags="$CFLAGS" \
 		    --extra-ldflags="$LDFLAGS" \
 		    --prefix="$THIN/$ARCH" \
-			| tee thin/arm64/configure.log
+			| tee ../../thin/arm64/configure.log
 
 		make -j3 install $EXPORT || exit 1
 		cd $CWD
