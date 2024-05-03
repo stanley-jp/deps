@@ -455,6 +455,11 @@ jobs:
           --target-os=android \
           --disable-asm \
           --extra-cflags="-march=${{ matrix.job.cpu }}" \
+          --enable-mediacodec \
+          --enable-jni \
+          --enable-encoder=h264_mediacodec --enable-encoder=hevc_mediacodec --enable-encoder=vp8_mediacodec --enable-encoder=vp9_mediacodec --enable-encoder=av1_mediacodec \
+          --enable-decoder=h264_mediacodec --enable-decoder=hevc_mediacodec --enable-decoder=vp8_mediacodec --enable-decoder=vp9_mediacodec --enable-decoder=av1_mediacodec \
+          --enable-bsf=h264_metadata  --enable-bsf=hevc_metadata --enable-bsf=vp9_metadata --enable-bsf=av1_metadata \
           | tee ../release/configure.log
 
       - name: print ffbuild logs
