@@ -179,6 +179,9 @@ jobs:
     if: true
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
+    container:
+      # image: nvidia/cuda:11.0.3-base-ubuntu18.04
+      image: ubuntu:18.04
     strategy:
       fail-fast: false
       matrix:
@@ -193,23 +196,27 @@ jobs:
   
       - name: tools
         run: |
-          sudo apt-get install build-essential
-          sudo apt-get -y install yasm pkg-config libva-dev
-
+          apt-get -y update
+          apt-get -y install build-essential yasm pkg-config libva-dev git zip
       
       - name: cross tool aarch64
         if: ${{ matrix.job.arch == 'aarch64' }}
         run: |
-          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
       
       - name: cross tool armv7
         if: ${{ matrix.job.arch == 'armv7' }}
         run: |
-          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+          apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 
-      - name: cuda-toolkit # sudo apt install nvidia-cuda-toolkit
+      - name: cuda-toolkit
         if: ${{ matrix.job.arch == 'x86_64' }}
-        uses: Jimver/cuda-toolkit@v0.2.6
+        run: |
+          apt-get install -y clang llvm-dev nvidia-cuda-toolkit
+
+      # - name: cuda-toolkit # sudo apt install nvidia-cuda-toolkit
+      #   if: ${{ matrix.job.arch == 'x86_64' }}
+      #   uses: Jimver/cuda-toolkit@v0.2.6
   
       - name: Source FFmpeg
         run: |
@@ -236,7 +243,7 @@ jobs:
         if: ${{ matrix.job.arch == 'x86_64' }}
         run: |
           git clone --depth=1 -b n11.1.5.2 https://github.com/FFmpeg/nv-codec-headers.git
-          cd nv-codec-headers && sudo make install
+          cd nv-codec-headers && make install
           cd -
       
       - name: Configure
