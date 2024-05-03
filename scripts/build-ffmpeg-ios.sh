@@ -145,7 +145,7 @@ then
 		    --extra-cflags="$CFLAGS" \
 		    --extra-ldflags="$LDFLAGS" \
 		    --prefix="$THIN/$ARCH" \
-		|| exit 1
+			| tee thin/arm64/configure.log
 
 		make -j3 install $EXPORT || exit 1
 		cd $CWD

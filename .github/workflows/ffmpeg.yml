@@ -61,6 +61,7 @@ jobs:
       run: |
         git clone --depth=1 -b ${{ env.FFMPEG_VERSION_WIN_LINUX }} https://github.com/FFmpeg/FFmpeg.git
         mkdir includes
+        mkdir release
         mkdir libs
         ls -al
 
@@ -148,7 +149,8 @@ jobs:
         --enable-encoder=hevc_amf \
         --enable-encoder=h264_nvenc \
         --enable-encoder=hevc_nvenc \
-        --enable-libmfx --enable-encoder=h264_qsv --enable-encoder=hevc_qsv
+        --enable-libmfx --enable-encoder=h264_qsv --enable-encoder=hevc_qsv \
+        | tee ../release/configure.log
     
     - name: Build
       working-directory: FFmpeg
@@ -223,6 +225,7 @@ jobs:
           git clone --depth=1 -b ${{ env.FFMPEG_VERSION_WIN_LINUX }} https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
+          mkdir release
           ls -al
 
       - name: Patch
@@ -255,7 +258,8 @@ jobs:
           ${{ matrix.job.extra }} \
           --extra-cflags="-I../includes" \
           --extra-ldflags="-L$PWD/../libs" \
-          ${{ matrix.job.codec }}
+          ${{ matrix.job.codec }} \
+          | tee ../release/configure.log
   
       - name: Build
         working-directory: FFmpeg
@@ -304,6 +308,7 @@ jobs:
         run: |
           git clone --depth=1 -b ${{ env.FFMPEG_VERSION }} https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
+          mkdir release
           mkdir libs
           ls -al
       
@@ -316,7 +321,8 @@ jobs:
           --disable-encoders \
           --disable-videotoolbox \
           --disable-autodetect \
-          ${{env.COMMON_CONF}}
+          ${{env.COMMON_CONF}} \
+          | tee ../release/configure.log
   
       - name: Build
         working-directory: FFmpeg
@@ -404,6 +410,7 @@ jobs:
           git clone --depth=1 -b ${{ env.FFMPEG_VERSION }} https://github.com/FFmpeg/FFmpeg.git
           mkdir includes
           mkdir libs
+          mkdir release
           ls -al
           uname -a
       
@@ -437,7 +444,8 @@ jobs:
           --arch=${{ matrix.job.arch }} \
           --target-os=android \
           --disable-asm \
-          --extra-cflags="-march=${{ matrix.job.cpu }}"
+          --extra-cflags="-march=${{ matrix.job.cpu }}" \
+          | tee ../release/configure.log
 
       - name: print ffbuild logs
         run: '[[ -f ./FFmpeg/ffbuild/config.log ]] && tail -50 ./FFmpeg/ffbuild/config.log'
@@ -496,6 +504,7 @@ jobs:
       - name: Build
         run: |
           mv ./scripts/build-ffmpeg-ios.sh ./
+          mkdir -p thin/arm64
           ./build-ffmpeg-ios.sh
       
       - name: Create Archive
