@@ -422,6 +422,12 @@ jobs:
           mkdir release
           ls -al
           uname -a
+
+      - name: Patch
+        run: |
+          cd FFmpeg
+          git apply -v --ignore-whitespace ../patches/7.0/0001-mediacodec-encode-remove-align.patch
+          cd -
       
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
