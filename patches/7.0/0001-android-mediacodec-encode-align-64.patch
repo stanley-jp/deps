@@ -1,7 +1,7 @@
-From a9ad53b1ef21f44485d902dc06f781c627d4264e Mon Sep 17 00:00:00 2001
+From be3d9d8092720bbe4239212648d2e9c4ffd7f40c Mon Sep 17 00:00:00 2001
 From: 21pages <pages21@163.com>
 Date: Wed, 22 May 2024 17:09:28 +0800
-Subject: [PATCH] android mediacodec encode align 32
+Subject: [PATCH] android mediacodec encode align 64
 
 Signed-off-by: 21pages <pages21@163.com>
 ---
@@ -9,14 +9,14 @@ Signed-off-by: 21pages <pages21@163.com>
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/libavcodec/mediacodecenc.c b/libavcodec/mediacodecenc.c
-index 984014f1b1..e9b8664803 100644
+index 984014f1b1..8dcd3dcd64 100644
 --- a/libavcodec/mediacodecenc.c
 +++ b/libavcodec/mediacodecenc.c
 @@ -200,16 +200,17 @@ static av_cold int mediacodec_init(AVCodecContext *avctx)
      ff_AMediaFormat_setString(format, "mime", codec_mime);
      // Workaround the alignment requirement of mediacodec. We can't do it
      // silently for AV_PIX_FMT_MEDIACODEC.
-+    const int align = 32;
++    const int align = 64;
      if (avctx->pix_fmt != AV_PIX_FMT_MEDIACODEC) {
 -        s->width = FFALIGN(avctx->width, 16);
 -        s->height = FFALIGN(avctx->height, 16);
