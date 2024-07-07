@@ -426,7 +426,7 @@ jobs:
       - name: Patch
         run: |
           cd FFmpeg
-          git apply -v --ignore-whitespace ../patches/7.0/0001-android-mediacodec-encode-align-64.patch
+          git apply -v --ignore-whitespace ../patches/7.0/0001-android-mediacodec-encode-align-32.patch
           cd -
       
       - name: Configure
