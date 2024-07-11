@@ -72,6 +72,7 @@ jobs:
         git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
         git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
         git apply -v --ignore-whitespace ../patches/5.1/0003-use-release-7.0-s-qsvenc-update_bitrate.patch
+        git apply -v --ignore-whitespace ../patches/5.1/0004-amf-colorspace.patch
         cd -
 
     - name: Source nv-codec-headers
@@ -239,6 +240,7 @@ jobs:
           git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
           git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
           git apply -v --ignore-whitespace ../patches/5.1/0003-use-release-7.0-s-qsvenc-update_bitrate.patch
+          git apply -v --ignore-whitespace ../patches/5.1/0004-amf-colorspace.patch
           cd -
   
       - name: Source AMF
