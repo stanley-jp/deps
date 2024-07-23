@@ -188,7 +188,7 @@ jobs:
     runs-on: ${{ matrix.job.os }}
     container:
       # image: nvidia/cuda:11.0.3-base-ubuntu18.04
-      image: ubuntu:18.04
+      image: ubuntu:20.04
     strategy:
       fail-fast: false
       matrix:
