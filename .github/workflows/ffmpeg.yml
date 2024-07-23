@@ -205,7 +205,7 @@ jobs:
       - name: tools
         run: |
           apt-get -y update
-          apt-get -y install build-essential yasm pkg-config libva-dev git zip autoconf automake cmake libass-dev libfreetype6-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev texinfo wget zlib1g-dev
+          apt-get -y install build-essential yasm pkg-config libva-dev git zip autoconf automake cmake libass-dev libfreetype6-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev texinfo wget zlib1g-dev libx264-dev libx265-dev
       
       - name: cross tool aarch64
         if: ${{ matrix.job.arch == 'aarch64' }}
