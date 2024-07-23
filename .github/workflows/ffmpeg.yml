@@ -256,6 +256,16 @@ jobs:
           git clone --depth=1 -b n11.1.5.2 https://github.com/FFmpeg/nv-codec-headers.git
           cd nv-codec-headers && make install
           cd -
+
+      - name: Source libsvtav1
+        if: ${{ matrix.job.arch == 'x86_64' }}
+        run: |
+          git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
+          cd SVT-AV1
+          cd Build
+          cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+          make && make install
+          cd -
       
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
