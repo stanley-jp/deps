@@ -12,7 +12,7 @@ env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true # https://github.com/actions/checkout/issues/1590#issuecomment-2208181786
   FFMPEG_VERSION_WIN_LINUX: "release/5.1" # higher version ffmpeg requires higher version of nvidia driver
   FFMPEG_VERSION: "release/7.0"
-  COMMON_CONF: "--disable-shared --enable-static --enable-pic --disable-everything  --disable-programs  --disable-doc  --disable-htmlpages  --disable-manpages  --disable-podpages  --disable-txtpages  --disable-network  --disable-appkit  --disable-coreimage   --disable-metal  --disable-sdl2  --disable-securetransport  --disable-vulkan  --disable-audiotoolbox  --disable-v4l2-m2m  --disable-debug  --disable-valgrind-backtrace  --disable-large-tests  --disable-avdevice  --enable-avcodec  --enable-avformat  --disable-avfilter --disable-swresample  --disable-swscale  --disable-postproc  --enable-decoder=h264  --enable-decoder=hevc  --enable-parser=h264  --enable-parser=hevc  --enable-bsf=h264_mp4toannexb  --enable-bsf=hevc_mp4toannexb --enable-bsf=h264_metadata  --enable-bsf=hevc_metadata --enable-muxer=mp4  --enable-protocol=file"
+  COMMON_CONF: "--disable-shared --enable-static --enable-pic --disable-programs  --disable-doc  --disable-htmlpages  --disable-manpages  --disable-podpages  --disable-txtpages  --disable-network  --disable-appkit  --disable-coreimage   --disable-metal  --disable-sdl2  --disable-securetransport  --disable-vulkan  --disable-audiotoolbox  --disable-v4l2-m2m  --disable-debug  --disable-valgrind-backtrace  --disable-large-tests  --disable-avdevice  --enable-avcodec  --enable-avformat  --disable-avfilter --disable-swresample  --disable-swscale  --disable-postproc  --enable-decoder=h264  --enable-decoder=hevc  --enable-parser=h264  --enable-parser=hevc  --enable-bsf=h264_mp4toannexb  --enable-bsf=hevc_mp4toannexb --enable-bsf=h264_metadata  --enable-bsf=hevc_metadata --enable-muxer=mp4  --enable-protocol=file"
 
 permissions:
   contents: write
@@ -20,6 +20,7 @@ permissions:
 jobs:
 
   build-for-windows:
+    if: false
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
     strategy:
@@ -189,12 +190,12 @@ jobs:
     runs-on: ${{ matrix.job.os }}
     container:
       # image: nvidia/cuda:11.0.3-base-ubuntu18.04
-      image: ubuntu:18.04
+      image: ubuntu:20.04
     strategy:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, codec: "--enable-gpl --enable-cuda --enable-cuda_llvm --enable-ffnvcodec --enable-libsvtav1 --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec --enable-amf --enable-libx264 --enable-libx265  --enable-encoder=h264_amf --enable-encoder=hevc_amf --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi --enable-encoder=h264_vaapi --enable-encoder=hevc_vaapi", extra: ""}
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, codec: "--enable-gpl --enable-cuda --enable-cuda_llvm --enable-ffnvcodec --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec --enable-amf --enable-encoder=h264_amf --enable-encoder=hevc_amf --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi --enable-encoder=h264_vaapi --enable-encoder=hevc_vaapi --enable-libsvtav1 --enable-libx264 --enable-libx265", extra: ""}
           - { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, arch: aarch64, codec: "", extra: "--enable-cross-compile --arch=arm64 cross-prefix=aarch64-linux-gnu-" }
           - { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, arch: armv7, codec: "", extra: "--enable-cross-compile --arch=armhf cross-prefix=arm-linux-gnueabihf-"}
       
@@ -258,15 +259,15 @@ jobs:
           cd nv-codec-headers && make install
           cd -
 
-      #- name: Source libsvtav1
-      #  if: ${{ matrix.job.arch == 'x86_64' }}
-      #  run: |
-      #    git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
-      #    cd SVT-AV1
-      #    cd Build
-      #    cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-      #    make && make install
-      #    cd -
+      - name: Source libsvtav1
+        if: ${{ matrix.job.arch == 'x86_64' }}
+        run: |
+          git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
+          cd SVT-AV1
+          cd Build
+          cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+          make && make install
+          cd -
       
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
