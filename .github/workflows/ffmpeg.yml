@@ -6,6 +6,7 @@ on:
   # pull_request:
 
 env:
+  DEBIAN_FRONTEND: "noninteractive"
   TAG_NAME: "dev"
   NDK_VERSION: "r26b"
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true # https://github.com/actions/checkout/issues/1590#issuecomment-2208181786
