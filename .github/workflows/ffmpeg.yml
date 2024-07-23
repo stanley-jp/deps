@@ -189,7 +189,7 @@ jobs:
     runs-on: ${{ matrix.job.os }}
     container:
       # image: nvidia/cuda:11.0.3-base-ubuntu18.04
-      image: ubuntu:20.04
+      image: ubuntu:18.04
     strategy:
       fail-fast: false
       matrix:
@@ -258,15 +258,15 @@ jobs:
           cd nv-codec-headers && make install
           cd -
 
-      - name: Source libsvtav1
-        if: ${{ matrix.job.arch == 'x86_64' }}
-        run: |
-          git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
-          cd SVT-AV1
-          cd Build
-          cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-          make && make install
-          cd -
+      #- name: Source libsvtav1
+      #  if: ${{ matrix.job.arch == 'x86_64' }}
+      #  run: |
+      #    git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
+      #    cd SVT-AV1
+      #    cd Build
+      #    cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+      #    make && make install
+      #    cd -
       
       - name: Configure
         working-directory: ${{github.workspace}}/FFmpeg
