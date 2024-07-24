@@ -235,15 +235,15 @@ jobs:
           mkdir release
           ls -al
 
-      - name: Patch
-        if: ${{ matrix.job.arch == 'x86_64' }}
-        run: |
-          cd FFmpeg
-          git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
-          git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
-          git apply -v --ignore-whitespace ../patches/5.1/0003-use-release-7.0-s-qsvenc-update_bitrate.patch
-          git apply -v --ignore-whitespace ../patches/5.1/0004-amf-colorspace.patch
-          cd -
+      #- name: Patch
+      #  if: ${{ matrix.job.arch == 'x86_64' }}
+      #  run: |
+      #    cd FFmpeg
+      #    git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
+      #    git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
+      #    git apply -v --ignore-whitespace ../patches/5.1/0003-use-release-7.0-s-qsvenc-update_bitrate.patch
+      #    git apply -v --ignore-whitespace ../patches/5.1/0004-amf-colorspace.patch
+      #    cd -
   
       - name: Source AMF
         if: ${{ matrix.job.arch == 'x86_64' }}
@@ -265,6 +265,7 @@ jobs:
           git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
           cd SVT-AV1
           cd Build
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=ON ..
           cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
           make && make install
           cd -
