@@ -255,7 +255,7 @@ jobs:
       - name: Source nv-codec-headers
         if: ${{ matrix.job.arch == 'x86_64' }}
         run: |
-          git clone --depth=1 -b n11.1.5.2 https://github.com/FFmpeg/nv-codec-headers.git
+          git clone --depth=1 https://github.com/FFmpeg/nv-codec-headers.git
           cd nv-codec-headers && make install
           cd -
 
@@ -267,6 +267,8 @@ jobs:
           mkdir build && cd build
           meson --buildtype=release --default-library=static ..
           ninja -j8 && ninja install
+          cp /usr/local/lib/x86_64-linux-gnu/pkgconfig/dav1d.pc /usr/local/lib/pkgconfig
+          rm /usr/local/lib/x86_64-linux-gnu/pkgconfig/dav1d.pc
           cd ../../
 
       - name: Source libsvtav1
