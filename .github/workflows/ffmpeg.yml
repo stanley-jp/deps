@@ -259,6 +259,16 @@ jobs:
           cd nv-codec-headers && make install
           cd -
 
+      - name: Source libdav1d
+        if: ${{ matrix.job.arch == 'x86_64' }}
+        run: |
+          git clone --depth=1 https://code.videolan.org/videolan/dav1d.git
+          cd dav1d
+          mkdir build && cd build
+          meson --buildtype=release --default-library=static ..
+          ninja -j8 && ninja install
+          cd ../../
+
       - name: Source libsvtav1
         if: ${{ matrix.job.arch == 'x86_64' }}
         run: |
