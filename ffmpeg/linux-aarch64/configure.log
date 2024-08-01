@@ -1,0 +1,69 @@
+install prefix            ../release
+source path               .
+C compiler                aarch64-linux-gnu-gcc
+C library                 glibc
+host C compiler           gcc
+host C library            glibc
+ARCH                      aarch64 (generic)
+big-endian                no
+runtime cpu detection     yes
+NEON enabled              yes
+VFP enabled               yes
+debug symbols             no
+strip symbols             yes
+optimize for size         no
+optimizations             yes
+static                    yes
+shared                    no
+postprocessing support    no
+network support           no
+threading support         pthreads
+safe bitstream reader     yes
+texi2html enabled         no
+perl enabled              yes
+pod2man enabled           yes
+makeinfo enabled          no
+makeinfo supports HTML    no
+xmllint enabled           no
+
+External libraries:
+iconv
+
+External libraries providing hardware acceleration:
+
+Libraries:
+avcodec                 avformat                avutil
+
+Programs:
+
+Enabled decoders:
+h264                    hevc
+
+Enabled encoders:
+
+Enabled hwaccels:
+
+Enabled parsers:
+ac3                     h264                    hevc
+
+Enabled demuxers:
+
+Enabled muxers:
+mov                     mp4
+
+Enabled protocols:
+file
+
+Enabled filters:
+
+Enabled bsfs:
+aac_adtstoasc           hevc_mp4toannexb
+h264_mp4toannexb        vp9_superframe
+
+Enabled indevs:
+
+Enabled outdevs:
+
+License: LGPL version 2.1 or later
+
+WARNING: aarch64-linux-gnu-pkg-config not found, library detection may fail.

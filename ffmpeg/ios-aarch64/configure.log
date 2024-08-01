@@ -1,0 +1,67 @@
+install prefix            /Users/runner/work/deps/deps/thin/arm64
+source path               /Users/runner/work/deps/deps/FFmpeg
+C compiler                xcrun -sdk iphoneos clang
+C library                 
+host C compiler           gcc
+host C library            
+ARCH                      aarch64 (generic)
+big-endian                no
+runtime cpu detection     yes
+NEON enabled              yes
+DOTPROD enabled           no
+I8MM enabled              no
+debug symbols             no
+strip symbols             yes
+optimize for size         no
+optimizations             yes
+static                    yes
+shared                    no
+postprocessing support    no
+network support           no
+threading support         pthreads
+safe bitstream reader     yes
+texi2html enabled         no
+perl enabled              yes
+pod2man enabled           yes
+makeinfo enabled          no
+makeinfo supports HTML    no
+xmllint enabled           yes
+
+External libraries:
+
+External libraries providing hardware acceleration:
+
+Libraries:
+avcodec                 avformat                avutil
+
+Programs:
+
+Enabled decoders:
+h264                    hevc
+
+Enabled encoders:
+
+Enabled hwaccels:
+
+Enabled parsers:
+ac3                     h264                    hevc
+
+Enabled demuxers:
+
+Enabled muxers:
+mov                     mp4
+
+Enabled protocols:
+file
+
+Enabled filters:
+
+Enabled bsfs:
+aac_adtstoasc           hevc_mp4toannexb
+h264_mp4toannexb        vp9_superframe
+
+Enabled indevs:
+
+Enabled outdevs:
+
+License: LGPL version 2.1 or later
