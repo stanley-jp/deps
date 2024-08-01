@@ -195,7 +195,7 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, codec: "--enable-gpl --enable-cuda --enable-cuda_llvm --enable-ffnvcodec --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec --enable-amf --enable-encoder=h264_amf --enable-encoder=hevc_amf --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi --enable-encoder=h264_vaapi --enable-encoder=hevc_vaapi --enable-libsvtav1 --enable-libx264 --enable-libdav1d", extra: ""}
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, codec: "--enable-gpl --enable-cuda --enable-cuda_llvm --enable-ffnvcodec --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec --enable-amf --enable-encoder=h264_amf --enable-encoder=hevc_amf --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi --enable-encoder=h264_vaapi --enable-encoder=hevc_vaapi --enable-libsvtav1 --enable-libdav1d", extra: ""}
           - { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, arch: aarch64, codec: "", extra: "--enable-cross-compile --arch=arm64 cross-prefix=aarch64-linux-gnu-" }
           - { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, arch: armv7, codec: "", extra: "--enable-cross-compile --arch=armhf cross-prefix=arm-linux-gnueabihf-"}
       
@@ -206,7 +206,7 @@ jobs:
       - name: tools
         run: |
           apt-get -y update
-          apt-get -y install build-essential yasm nasm pkg-config libva-dev git zip autoconf automake cmake libass-dev libfreetype6-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev texinfo wget zlib1g-dev libx264-dev meson ninja-build
+          apt-get -y install build-essential yasm nasm pkg-config libva-dev git zip autoconf automake cmake libass-dev libfreetype6-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev texinfo wget zlib1g-dev meson ninja-build
       
       - name: cross tool aarch64
         if: ${{ matrix.job.arch == 'aarch64' }}
