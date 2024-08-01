@@ -277,9 +277,9 @@ jobs:
           git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
           cd SVT-AV1
           cd Build
-          cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-          # cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=ON ..
-          cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+          # cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+          cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=ON ..
+          # cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
           make -j8 && make install
           cd -
       
@@ -287,12 +287,13 @@ jobs:
         working-directory: ${{github.workspace}}/FFmpeg
         run: |
           ./configure  \
+          --pkg-config-flags="--static" \
           --prefix=../release \
           ${{env.COMMON_CONF}} \
           --target-os=linux \
           ${{ matrix.job.extra }} \
-          --extra-cflags="-I../includes" \
-          --extra-ldflags="-L$PWD/../libs" \
+          --extra-cflags="-I../includes -static" \
+          --extra-ldflags="-L$PWD/../libs -static" \
           ${{ matrix.job.codec }} \
           | tee ../release/configure.log
   
