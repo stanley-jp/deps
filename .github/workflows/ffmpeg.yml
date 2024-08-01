@@ -286,13 +286,13 @@ jobs:
         working-directory: ${{github.workspace}}/FFmpeg
         run: |
           ./configure  \
-          --pkg-config-flags="--static" \
           --prefix=../release \
+          --pkg-config-flags="--static" \
           ${{env.COMMON_CONF}} \
           --target-os=linux \
           ${{ matrix.job.extra }} \
-          --extra-cflags="-I../includes" \
-          --extra-ldflags="-L$PWD/../libs" \
+          --extra-cflags="-I../includes -static" \
+          --extra-ldflags="-L$PWD/../libs -static" \
           ${{ matrix.job.codec }} \
           | tee ../release/configure.log
   
