@@ -43,15 +43,13 @@ makeinfo supports HTML    yes
 xmllint enabled           no
 
 External libraries:
-alsa                    libx264                 libxcb_shm
-iconv                   libx265                 libxcb_xfixes
-libdav1d                libxcb                  xlib
-libsvtav1               libxcb_shape            zlib
+iconv                   libsvtav1
+libdav1d                zlib
 
 External libraries providing hardware acceleration:
 amf                     cuvid                   nvenc
-cuda                    ffnvcodec               vaapi
-cuda_llvm               nvdec                   vdpau
+cuda                    ffnvcodec               vdpau
+cuda_llvm               nvdec
 
 Libraries:
 avcodec                 avformat                avutil
@@ -229,83 +227,77 @@ fic                     pfm                     zlib
 fits                    pgm                     zmbv
 
 Enabled encoders:
-a64multi                hdr                     pgmyuv
-a64multi5               hevc_amf                phm
-aac                     hevc_nvenc              png
-ac3                     hevc_vaapi              ppm
-ac3_fixed               huffyuv                 prores
-adpcm_adx               jpeg2000                prores_aw
-adpcm_argo              jpegls                  prores_ks
-adpcm_g722              libsvtav1               qoi
-adpcm_g726              libx264                 qtrle
-adpcm_g726le            libx264rgb              r10k
-adpcm_ima_alp           libx265                 r210
-adpcm_ima_amv           ljpeg                   ra_144
-adpcm_ima_apm           magicyuv                rawvideo
-adpcm_ima_qt            mjpeg                   roq
-adpcm_ima_ssi           mjpeg_vaapi             roq_dpcm
-adpcm_ima_wav           mlp                     rpza
-adpcm_ima_ws            movtext                 rv10
-adpcm_ms                mp2                     rv20
-adpcm_swf               mp2fixed                s302m
-adpcm_yamaha            mpeg1video              sbc
-alac                    mpeg2_vaapi             sgi
-alias_pix               mpeg2video              smc
-amv                     mpeg4                   snow
-anull                   msmpeg4v2               sonic
-apng                    msmpeg4v3               sonic_ls
-aptx                    msrle                   speedhq
-aptx_hd                 msvideo1                srt
-ass                     nellymoser              ssa
-asv1                    opus                    subrip
-asv2                    pam                     sunrast
-av1_amf                 pbm                     svq1
-av1_nvenc               pcm_alaw                targa
-avrp                    pcm_bluray              text
-avui                    pcm_dvd                 tiff
-ayuv                    pcm_f32be               truehd
-bitpacked               pcm_f32le               tta
-bmp                     pcm_f64be               ttml
-cfhd                    pcm_f64le               utvideo
-cinepak                 pcm_mulaw               v210
-cljr                    pcm_s16be               v308
-comfortnoise            pcm_s16be_planar        v408
-dca                     pcm_s16le               v410
-dfpwm                   pcm_s16le_planar        vbn
-dnxhd                   pcm_s24be               vc2
-dpx                     pcm_s24daud             vnull
-dvbsub                  pcm_s24le               vorbis
-dvdsub                  pcm_s24le_planar        vp8_vaapi
-dvvideo                 pcm_s32be               vp9_vaapi
-eac3                    pcm_s32le               wavpack
-exr                     pcm_s32le_planar        wbmp
-ffv1                    pcm_s64be               webvtt
-ffvhuff                 pcm_s64le               wmav1
-fits                    pcm_s8                  wmav2
-flac                    pcm_s8_planar           wmv1
-flashsv                 pcm_u16be               wmv2
-flashsv2                pcm_u16le               wrapped_avframe
-flv                     pcm_u24be               xbm
-g723_1                  pcm_u24le               xface
-gif                     pcm_u32be               xsub
-h261                    pcm_u32le               xwd
-h263                    pcm_u8                  y41p
-h263p                   pcm_vidc                yuv4
-h264_amf                pcx                     zlib
-h264_nvenc              pfm                     zmbv
-h264_vaapi              pgm
+a64multi                h264_amf                phm
+a64multi5               h264_nvenc              png
+aac                     hdr                     ppm
+ac3                     hevc_amf                prores
+ac3_fixed               hevc_nvenc              prores_aw
+adpcm_adx               huffyuv                 prores_ks
+adpcm_argo              jpeg2000                qoi
+adpcm_g722              jpegls                  qtrle
+adpcm_g726              libsvtav1               r10k
+adpcm_g726le            ljpeg                   r210
+adpcm_ima_alp           magicyuv                ra_144
+adpcm_ima_amv           mjpeg                   rawvideo
+adpcm_ima_apm           mlp                     roq
+adpcm_ima_qt            movtext                 roq_dpcm
+adpcm_ima_ssi           mp2                     rpza
+adpcm_ima_wav           mp2fixed                rv10
+adpcm_ima_ws            mpeg1video              rv20
+adpcm_ms                mpeg2video              s302m
+adpcm_swf               mpeg4                   sbc
+adpcm_yamaha            msmpeg4v2               sgi
+alac                    msmpeg4v3               smc
+alias_pix               msrle                   snow
+amv                     msvideo1                sonic
+anull                   nellymoser              sonic_ls
+apng                    opus                    speedhq
+aptx                    pam                     srt
+aptx_hd                 pbm                     ssa
+ass                     pcm_alaw                subrip
+asv1                    pcm_bluray              sunrast
+asv2                    pcm_dvd                 svq1
+av1_amf                 pcm_f32be               targa
+av1_nvenc               pcm_f32le               text
+avrp                    pcm_f64be               tiff
+avui                    pcm_f64le               truehd
+ayuv                    pcm_mulaw               tta
+bitpacked               pcm_s16be               ttml
+bmp                     pcm_s16be_planar        utvideo
+cfhd                    pcm_s16le               v210
+cinepak                 pcm_s16le_planar        v308
+cljr                    pcm_s24be               v408
+comfortnoise            pcm_s24daud             v410
+dca                     pcm_s24le               vbn
+dfpwm                   pcm_s24le_planar        vc2
+dnxhd                   pcm_s32be               vnull
+dpx                     pcm_s32le               vorbis
+dvbsub                  pcm_s32le_planar        wavpack
+dvdsub                  pcm_s64be               wbmp
+dvvideo                 pcm_s64le               webvtt
+eac3                    pcm_s8                  wmav1
+exr                     pcm_s8_planar           wmav2
+ffv1                    pcm_u16be               wmv1
+ffvhuff                 pcm_u16le               wmv2
+fits                    pcm_u24be               wrapped_avframe
+flac                    pcm_u24le               xbm
+flashsv                 pcm_u32be               xface
+flashsv2                pcm_u32le               xsub
+flv                     pcm_u8                  xwd
+g723_1                  pcm_vidc                y41p
+gif                     pcx                     yuv4
+h261                    pfm                     zlib
+h263                    pgm                     zmbv
+h263p                   pgmyuv
 
 Enabled hwaccels:
-av1_nvdec               mjpeg_vaapi             vc1_vaapi
-av1_vaapi               mpeg1_nvdec             vc1_vdpau
-h263_vaapi              mpeg1_vdpau             vp8_nvdec
-h264_nvdec              mpeg2_nvdec             vp8_vaapi
-h264_vaapi              mpeg2_vaapi             vp9_nvdec
-h264_vdpau              mpeg2_vdpau             vp9_vaapi
-hevc_nvdec              mpeg4_nvdec             vp9_vdpau
-hevc_vaapi              mpeg4_vaapi             wmv3_nvdec
-hevc_vdpau              mpeg4_vdpau             wmv3_vaapi
-mjpeg_nvdec             vc1_nvdec               wmv3_vdpau
+av1_nvdec               mpeg1_vdpau             vp8_nvdec
+h264_nvdec              mpeg2_nvdec             vp9_nvdec
+h264_vdpau              mpeg2_vdpau             vp9_vdpau
+hevc_nvdec              mpeg4_nvdec             wmv3_nvdec
+hevc_vdpau              mpeg4_vdpau             wmv3_vdpau
+mjpeg_nvdec             vc1_nvdec
+mpeg1_nvdec             vc1_vdpau
 
 Enabled parsers:
 aac                     dvdsub                  mpegaudio
@@ -539,3 +531,8 @@ Enabled indevs:
 Enabled outdevs:
 
 License: GPL version 2 or later
+
+WARNING: Disabled h264_vaapi_hwaccel because not all dependencies are satisfied: vaapi
+WARNING: Disabled hevc_vaapi_hwaccel because not all dependencies are satisfied: vaapi VAPictureParameterBufferHEVC
+WARNING: Disabled h264_vaapi_encoder because some selected dependency is unsatisfied: atsc_a53 cbs_h264 vaapi_encode
+WARNING: Disabled hevc_vaapi_encoder because some selected dependency is unsatisfied: atsc_a53 cbs_h265 vaapi_encode

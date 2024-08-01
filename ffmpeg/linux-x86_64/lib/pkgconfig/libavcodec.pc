@@ -9,6 +9,6 @@ Version: 60.31.102
 Requires: libavutil >= 58.29.100
 Requires.private: 
 Conflicts:
-Libs: -L${libdir}  -lavcodec -pthread -lm -latomic -L/usr/local/lib/x86_64-linux-gnu -ldav1d -pthread -ldl -L/usr/local/lib -lSvtAv1Enc -lx264 -lx265 -lz -lva -ldl
+Libs: -L${libdir}  -lavcodec -pthread -lm -latomic -L/usr/local/lib/x86_64-linux-gnu -ldav1d -pthread -ldl -L/usr/local/lib -lSvtAv1Enc -lpthread -lm -lz -ldl
 Libs.private: 
 Cflags: -I${includedir}
