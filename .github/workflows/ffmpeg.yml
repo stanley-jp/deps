@@ -195,7 +195,7 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, codec: "--enable-gpl --enable-cuda --enable-cuda_llvm --enable-ffnvcodec --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec --enable-amf --enable-encoder=h264_amf --enable-encoder=hevc_amf --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi --enable-encoder=h264_vaapi --enable-encoder=hevc_vaapi --enable-libsvtav1 --enable-libx264 --enable-libx265 --enable-libdav1d", extra: ""}
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-20.04, arch: x86_64, codec: "--enable-gpl --enable-cuda --enable-cuda_llvm --enable-ffnvcodec --enable-encoder=h264_nvenc --enable-encoder=hevc_nvenc --enable-hwaccel=h264_nvdec --enable-hwaccel=hevc_nvdec --enable-amf --enable-encoder=h264_amf --enable-encoder=hevc_amf --enable-hwaccel=h264_vaapi --enable-hwaccel=hevc_vaapi --enable-encoder=h264_vaapi --enable-encoder=hevc_vaapi --enable-libsvtav1 --enable-libdav1d", extra: ""}
           - { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, arch: aarch64, codec: "", extra: "--enable-cross-compile --arch=arm64 cross-prefix=aarch64-linux-gnu-" }
           - { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, arch: armv7, codec: "", extra: "--enable-cross-compile --arch=armhf cross-prefix=arm-linux-gnueabihf-"}
       
@@ -206,7 +206,7 @@ jobs:
       - name: tools
         run: |
           apt-get -y update
-          apt-get -y install build-essential yasm nasm pkg-config libva-dev git zip autoconf automake cmake libass-dev libfreetype6-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev texinfo wget zlib1g-dev libx264-dev libx265-dev meson ninja-build
+          apt-get -y install build-essential yasm nasm pkg-config libva-dev git zip autoconf automake cmake libass-dev libfreetype6-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev texinfo wget zlib1g-dev libx264-dev meson ninja-build
       
       - name: cross tool aarch64
         if: ${{ matrix.job.arch == 'aarch64' }}
@@ -235,15 +235,18 @@ jobs:
           mkdir release
           ls -al
 
-      #- name: Patch
-      #  if: ${{ matrix.job.arch == 'x86_64' }}
-      #  run: |
-      #    cd FFmpeg
+      - name: Patch
+        if: ${{ matrix.job.arch == 'x86_64' }}
+        run: |
+          cd FFmpeg
+          git apply -v --ignore-whitespace ../patches/6.1/0001-avcodec-libsvtav1-add-version-guard-for-external-par.patch
+          git apply -v --ignore-whitespace ../patches/6.1/0002-avcodec-libsvtav1-send-the-EOS-signal-without-a-one-.patch
+          cd -
       #    git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
       #    git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
       #    git apply -v --ignore-whitespace ../patches/5.1/0003-use-release-7.0-s-qsvenc-update_bitrate.patch
       #    git apply -v --ignore-whitespace ../patches/5.1/0004-amf-colorspace.patch
-      #    cd -
+        # cd -
   
       - name: Source AMF
         if: ${{ matrix.job.arch == 'x86_64' }}
@@ -279,7 +282,6 @@ jobs:
           cd Build
           # cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
           cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=ON ..
-          # cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
           make -j8 && make install
           cd -
       
@@ -287,8 +289,8 @@ jobs:
         working-directory: ${{github.workspace}}/FFmpeg
         run: |
           ./configure  \
-          --pkg-config-flags="--static" \
           --prefix=../release \
+          --pkg-config-flags="--static" \
           ${{env.COMMON_CONF}} \
           --target-os=linux \
           ${{ matrix.job.extra }} \
