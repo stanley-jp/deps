@@ -239,7 +239,8 @@ jobs:
         if: ${{ matrix.job.arch == 'x86_64' }}
         run: |
           cd FFmpeg
-          git apply -v --ignore-whitespace ../patches/6.1/0001-patch-for-low-delay.patch
+          git apply -v --ignore-whitespace ../patches/6.1/0001-avcodec-libsvtav1-add-version-guard-for-external-par.patch
+          git apply -v --ignore-whitespace ../patches/6.1/0002-avcodec-libsvtav1-send-the-EOS-signal-without-a-one-.patch
           cd -
       #    git apply -v --ignore-whitespace ../patches/5.1/0001-avcodec-amfenc-add-query_timeout-option-for-h264-hev.patch
       #    git apply -v --ignore-whitespace ../patches/5.1/0002-libavcodec-amfenc-reconfig-when-bitrate-change.patch
